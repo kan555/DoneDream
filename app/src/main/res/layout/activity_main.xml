@@ -19,7 +19,8 @@
             android:layout_width="@dimen/icon"
             android:layout_height="@dimen/icon"
             android:id="@+id/imageView"
-            android:src="@drawable/logo200" />
+            android:src="@drawable/logo200"
+            android:layout_marginBottom="20dp" />
 
         <EditText
             android:layout_width="@dimen/edit"

@@ -9,5 +9,6 @@
     <string name="email">Email :</string>
     <string name="birth">Birth Date :</string>
     <string name="country">Country :</string>
+    <string name="save">Sign Up</string>
 
 </resources>
