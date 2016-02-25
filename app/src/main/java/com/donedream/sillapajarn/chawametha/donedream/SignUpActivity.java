@@ -2,6 +2,7 @@ package com.donedream.sillapajarn.chawametha.donedream;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,16 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -128,14 +139,39 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void updateValueToMySQL() {
 
+        StrictMode.ThreadPolicy threadPolicy = new StrictMode.ThreadPolicy
+                .Builder().permitAll().build();
+        StrictMode.setThreadPolicy(threadPolicy);
 
+
+        try {
+
+            ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair("isAdd", "true"));
+            nameValuePairs.add(new BasicNameValuePair(MyManage.column_User, userString));
+            nameValuePairs.add(new BasicNameValuePair(MyManage.column_Password, passwordString));
+            nameValuePairs.add(new BasicNameValuePair(MyManage.column_Name, nameString));
+            nameValuePairs.add(new BasicNameValuePair(MyManage.column_Email, emailString));
+            nameValuePairs.add(new BasicNameValuePair(MyManage.column_Birth, birthString));
+            nameValuePairs.add(new BasicNameValuePair(MyManage.column_Country, countryString));
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost("http://swiftcodingthai.com/dream/php_add_user_kant.php");
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
+            httpClient.execute(httpPost);
+
+            Toast.makeText(SignUpActivity.this, "Success!", Toast.LENGTH_SHORT).show();
+            finish();
+
+        } catch (Exception e) {
+            Toast.makeText(SignUpActivity.this, "Cannot Upadate to Database", Toast.LENGTH_SHORT).show();
+        }
 
     }   //update value to mySQL
 
     private void gerValueFromDatePicker() {
 
         int intDay = birthDatePicker.getDayOfMonth();
-        int intMonth = birthDatePicker.getMonth() +1; //1==jan
+        int intMonth = birthDatePicker.getMonth() + 1; //1==jan
         int intYear = birthDatePicker.getYear();
 
         ///Log.d("25Feb", "birth ==> " + intDay + "/" + intMonth + "/" + intYear);
