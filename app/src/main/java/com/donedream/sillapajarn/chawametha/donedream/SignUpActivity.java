@@ -1,9 +1,13 @@
 package com.donedream.sillapajarn.chawametha.donedream;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -26,7 +30,32 @@ public class SignUpActivity extends AppCompatActivity {
         //blind widget
         bindWidget();
 
+        //create spinner
+        createSpinner();
+
     }   //main method
+
+    private void createSpinner() {
+
+        final String[] countryStrings = getResources().getStringArray(R.array.country);
+        ArrayAdapter<String> stringArrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, countryStrings);
+        countrySpinner.setAdapter(stringArrayAdapter);
+
+        countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                countryString = countryStrings[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                countryString = countryStrings[0];
+            }
+        });
+
+
+    }   //create spinner
 
     private void bindWidget() {
 
@@ -35,6 +64,7 @@ public class SignUpActivity extends AppCompatActivity {
         nameEditText = (EditText) findViewById(R.id.editText5);
         emailEditText = (EditText) findViewById(R.id.editText6);
         birthDatePicker = (DatePicker) findViewById(R.id.datePicker);
+        countrySpinner = (Spinner) findViewById(R.id.spinner);
 
 
     }   //blind widget
@@ -57,11 +87,50 @@ public class SignUpActivity extends AppCompatActivity {
             // no space
             gerValueFromDatePicker();
 
+            //confirm data
+            confirmData();
+
 
         }   //if
 
 
     }   //click save data (sign up)
+
+    private void confirmData() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.drawable.icon_myaccount);
+        builder.setTitle("Confirm Data");
+        builder.setMessage(getResources().getString(R.string.user) + userString + "\n" +
+                getResources().getString(R.string.pass) + passwordString + "\n" +
+                getResources().getString(R.string.name) + nameString + "\n" +
+                getResources().getString(R.string.email) + emailString + "\n" +
+                getResources().getString(R.string.country) + countryString + "\n" +
+                getResources().getString(R.string.birth) + birthString);
+        builder.setCancelable(false);
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                updateValueToMySQL();
+                dialogInterface.dismiss();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+
+
+    }   //confirm data
+
+    private void updateValueToMySQL() {
+
+
+
+    }   //update value to mySQL
 
     private void gerValueFromDatePicker() {
 
@@ -69,7 +138,11 @@ public class SignUpActivity extends AppCompatActivity {
         int intMonth = birthDatePicker.getMonth() +1; //1==jan
         int intYear = birthDatePicker.getYear();
 
-        Log.d("25Feb", "birth ==> " + intDay + "/" + intMonth + "/" + intYear);
+        ///Log.d("25Feb", "birth ==> " + intDay + "/" + intMonth + "/" + intYear);
+
+        birthString = Integer.toString(intDay) + "/" +
+                Integer.toString(intMonth) + "/" +
+                Integer.toString(intYear);
 
     }   // ger value from date picker
 
